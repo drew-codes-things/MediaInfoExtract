@@ -182,9 +182,6 @@ def _use_this_format(cnt, ainfo):
 
     For multichannel tracks (5.1/7.1), the first line is also the desired one.
     """
-    channels = ainfo.get("Channels")
-    if channels in {"7.1", "5.1"}:
-        return cnt == 1
     return cnt == 1
 
 
@@ -298,7 +295,7 @@ def format_output(info, is_remux, src):
         for k in ("Language", "Format", "Channels", "Sampling rate"):
             if k in a:
                 ln += f" {a[k]} /"
-        rate_key = "Maximum bit rate" if a.get("Channels") in {"7.1", "8"} else "Bit rate"
+        rate_key = "Maximum bit rate" if a.get("Channels") in {"7.1"} else "Bit rate"
         if rate_key in a:
             ln += f" {a[rate_key].replace(' ', '').replace('kbps', ' kbps')} /"
         if "Bit depth" in a:

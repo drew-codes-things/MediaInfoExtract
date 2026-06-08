@@ -120,6 +120,20 @@ mediainfo-extract
 ```
 
 
+## Get the Code
+
+Clone with git:
+
+```bash
+git clone https://github.com/drew-codes-things/MediaInfoExtract.git
+```
+
+Or with the [GitHub CLI](https://cli.github.com/):
+
+```bash
+gh repo clone drew-codes-things/MediaInfoExtract
+```
+
 ## License
 
 MIT - made by [Drew](https://github.com/drew-codes-things)
