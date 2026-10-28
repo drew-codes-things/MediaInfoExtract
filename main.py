@@ -5,11 +5,11 @@ import shlex
 from pathlib import Path
 
 ASCII_ART = r"""
-__ ___  ___  ____  ____  ______   __  __
-/ |/ /__  ____/ (_)___ _/ _/___ / __/___ / ____/___ _________ ___  ____ _/ /_/ /____ _____
-/ /|_/ / _ \/ __ / / __ `// // __ \/ /_/ __ \ / /_ / __ \/ ___/ __ `__ \/ __ `/ __/ __/ _ \/ ___/
-/ / / / __/ /_/ / / /_/ // // / / / __/ /_/ / / __/ / /_/ / / / / / / / / /_/ / /_/ /_/ __/ /
-/_/ /_/\___/\__,_/_/\__,_/___/_/ /_/_/ \____/ /_/ \____/_/ /_/ /_/ /_/\__,_/\__/\__/\___/_/
+    __  ___         ___       ____      ____         ______                           __  __
+   /  |/  /__  ____/ (_)___ _/  _/___  / __/___     / ____/___  _________ ___  ____ _/ /_/ /____  _____
+  / /|_/ / _ \/ __  / / __ `// // __ \/ /_/ __ \   / /_  / __ \/ ___/ __ `__ \/ __ `/ __/ __/ _ \/ ___/
+ / /  / /  __/ /_/ / / /_/ // // / / / __/ /_/ /  / __/ / /_/ / /  / / / / / / /_/ / /_/ /_/  __/ /
+/_/  /_/\___/\__,_/_/\__,_/___/_/ /_/_/  \____/  /_/    \____/_/  /_/ /_/ /_/\__,_/\__/\__/\___/_/
 """
 
 DEFAULT_SOURCES = [
@@ -20,7 +20,6 @@ DEFAULT_SOURCES = [
 
 
 def load_sources():
-    """Load sources from sources.txt next to the script, falling back to hardcoded list."""
     sources_file = Path(__file__).parent / "sources.txt"
     if sources_file.is_file():
         try:
@@ -110,9 +109,9 @@ def extract_info(file_path: str) -> dict:
                 audio_info["Channels"] = _norm_channels(line)
             elif "Sampling rate" in line:
                 audio_info["Sampling rate"] = line.split(":", 1)[1].strip()
-            elif "Bit rate" in line:
+            elif key == "Bit rate":
                 audio_info["Bit rate"] = _clean_kbps(line)
-            elif "Maximum bit rate" in line:
+            elif key == "Maximum bit rate":
                 audio_info["Maximum bit rate"] = _clean_kbps(line)
             elif "Bit depth" in line:
                 m = re.search(r"\d+", line.split(":", 1)[1])
@@ -174,13 +173,6 @@ def _handle_hdr(info, line):
 
 
 def _use_this_format(cnt, ainfo):
-    """
-    Capture only the first Format line for an audio track.
-
-    Capturing later Format lines can overwrite the codec with sub-format detail
-    on stereo tracks; the first line is the desired one for both stereo and
-    multichannel (5.1/7.1) tracks.
-    """
     return cnt == 1
 
 
@@ -198,12 +190,12 @@ def _audio_fmt(line):
         if "x" in raw:
             return "DTS XLL X"
         return "DTS"
-    if "ac-3" in raw or "ac3" in raw:
-        return "AC-3"
     if "e-ac-3" in raw or "eac3" in raw:
         if "joc" in raw:
             return "E-AC-3 JOC"
         return "E-AC-3"
+    if "ac-3" in raw or "ac3" in raw:
+        return "AC-3"
     if "flac" in raw:
         return "FLAC"
     if "aac" in raw:
@@ -229,11 +221,6 @@ def _norm_channels(line):
 
 
 def _clean_kbps(line):
-    """
-    Extract and normalise a kbps value from a MediaInfo bit-rate line.
-
-    The raw value is something like "384 kbps" or "384 kb/s".
-    """
     val = line.split(":", 1)[1].strip().replace("kb/s", "kbps").replace("Kb/s", "kbps")
     numeric_part = val.replace(" ", "").replace("kbps", "")
     if numeric_part.isdigit():

@@ -20,7 +20,6 @@ DEFAULT_SOURCES = [
 
 
 def load_sources():
-    """Load sources from sources.txt next to the script, falling back to hardcoded list."""
     sources_file = Path(__file__).parent / "sources.txt"
     if sources_file.is_file():
         try:
@@ -110,9 +109,9 @@ def extract_info(file_path: str) -> dict:
                 audio_info["Channels"] = _norm_channels(line)
             elif "Sampling rate" in line:
                 audio_info["Sampling rate"] = line.split(":", 1)[1].strip()
-            elif "Bit rate" in line:
+            elif key == "Bit rate":
                 audio_info["Bit rate"] = _clean_kbps(line)
-            elif "Maximum bit rate" in line:
+            elif key == "Maximum bit rate":
                 audio_info["Maximum bit rate"] = _clean_kbps(line)
             elif "Bit depth" in line:
                 m = re.search(r"\d+", line.split(":", 1)[1])
@@ -174,14 +173,6 @@ def _handle_hdr(info, line):
 
 
 def _use_this_format(cnt, ainfo):
-    """
-    Decide whether to capture a Format line for an audio track.
-
-    Prefer the first Format line. Capturing both first and second Format lines
-    can overwrite the codec with sub-format detail on stereo tracks.
-
-    For multichannel tracks (5.1/7.1), the first line is also the desired one.
-    """
     return cnt == 1
 
 
@@ -199,12 +190,12 @@ def _audio_fmt(line):
         if "x" in raw:
             return "DTS XLL X"
         return "DTS"
-    if "ac-3" in raw or "ac3" in raw:
-        return "AC-3"
     if "e-ac-3" in raw or "eac3" in raw:
         if "joc" in raw:
             return "E-AC-3 JOC"
         return "E-AC-3"
+    if "ac-3" in raw or "ac3" in raw:
+        return "AC-3"
     if "flac" in raw:
         return "FLAC"
     if "aac" in raw:
@@ -230,11 +221,6 @@ def _norm_channels(line):
 
 
 def _clean_kbps(line):
-    """
-    Extract and normalise a kbps value from a MediaInfo bit-rate line.
-
-    The raw value is something like "384 kbps" or "384 kb/s".
-    """
     val = line.split(":", 1)[1].strip().replace("kb/s", "kbps").replace("Kb/s", "kbps")
     numeric_part = val.replace(" ", "").replace("kbps", "")
     if numeric_part.isdigit():
