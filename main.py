@@ -1,3 +1,5 @@
+import argparse
+import csv
 import os
 import re
 import shlex
@@ -320,6 +322,72 @@ def process_file(path, is_remux, src):
         print(f"[!] Error processing {p.name}: {e}")
 
 
+CSV_COLUMNS = [
+    "File", "Name", "Quality", "Video format", "Video bit rate", "Frame rate", "Format profile",
+    "HDR", "Dolby Vision", "Bit depth", "Aspect ratio", "Audio tracks", "Audio", "Subtitle languages",
+]
+DEFAULT_CSV_NAME = "mediainfo-summary.csv"
+
+
+def is_mediainfo_report(path):
+    try:
+        with open(path, encoding="utf-8-sig", errors="ignore") as fh:
+            for line in fh:
+                if line.strip():
+                    return line.strip() == "General"
+    except OSError:
+        return False
+    return False
+
+
+def find_reports(folder):
+    return sorted(p for p in Path(folder).rglob("*.txt") if is_mediainfo_report(p))
+
+
+def audio_summary(track):
+    return " ".join(track[key] for key in ("Language", "Format", "Channels") if key in track)
+
+
+def csv_row(path, folder, info):
+    return {
+        "File": str(Path(path).relative_to(folder)),
+        "Name": re.sub(r"\s*\[[^\]]*\]", "", info["Complete name"]).strip(),
+        "Quality": info.get("Quality", "N/A"),
+        "Video format": info.get("Format", ""),
+        "Video bit rate": info.get("Bit rate", ""),
+        "Frame rate": info.get("Frame rate", ""),
+        "Format profile": info.get("Format profile", ""),
+        "HDR": info.get("HDR format", ""),
+        "Dolby Vision": info.get("Dolby Vision", ""),
+        "Bit depth": info.get("Bit depth", ""),
+        "Aspect ratio": info.get("Display aspect ratio", ""),
+        "Audio tracks": len(info["Audio"]),
+        "Audio": "; ".join(audio_summary(track) for track in info["Audio"]),
+        "Subtitle languages": ", ".join(sub["Language"] for sub in info["Subtitles"] if "Language" in sub),
+    }
+
+
+def write_folder_csv(folder, output=None):
+    folder = Path(folder)
+    if not folder.is_dir():
+        raise NotADirectoryError(f"Folder not found: {folder}")
+    out_path = Path(output) if output else folder / DEFAULT_CSV_NAME
+    rows = []
+    failed = []
+    for report in find_reports(folder):
+        try:
+            rows.append(csv_row(report, folder, extract_info(str(report))))
+        except Exception as e:
+            failed.append(report)
+            print(f"[!] Error processing {report.name}: {e}")
+    with open(out_path, "w", newline="", encoding="utf-8") as fh:
+        writer = csv.DictWriter(fh, fieldnames=CSV_COLUMNS)
+        writer.writeheader()
+        writer.writerows(rows)
+    print(f"[OK] {len(rows)} report(s) written to {out_path}" + (f", {len(failed)} failed" if failed else ""))
+    return out_path, len(rows), failed
+
+
 def ask_yes_no(prompt, default="y"):
     default = default.lower()
     assert default in {"y", "n"}
@@ -344,16 +412,43 @@ def choose_source(sources):
     return sources[0]
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Format MediaInfo text reports for release notes.")
+    parser.add_argument("--csv", metavar="FOLDER", default=None,
+                        help="Write one CSV row per MediaInfo report found in FOLDER (and its subfolders), then exit")
+    parser.add_argument("-o", "--output", default=None,
+                        help=f"CSV path for --csv (default: FOLDER/{DEFAULT_CSV_NAME})")
+    return parser.parse_args()
+
+
+def run_csv_mode(folder, output=None):
+    try:
+        write_folder_csv(folder, output)
+    except (NotADirectoryError, OSError) as e:
+        print(f"[!] {e}")
+        return False
+    return True
+
+
 def main():
+    args = parse_args()
+    if args.csv:
+        raise SystemExit(0 if run_csv_mode(args.csv, args.output) else 1)
+
     print(ASCII_ART)
     sources = load_sources()
 
     print("Select run mode:")
     print("1. Batch - drag and drop files or paste quoted paths")
     print("2. Interactive - one path at a time")
-    mode = input("Choose 1 or 2 [1]: ").strip() or "1"
+    print("3. Folder - one CSV summary of every MediaInfo report in a folder")
+    mode = input("Choose 1, 2 or 3 [1]: ").strip() or "1"
 
-    if mode == "1":
+    if mode == "3":
+        folder = input("\nFolder path: ").strip().strip('"')
+        run_csv_mode(folder)
+
+    elif mode == "1":
         print("\nDrag and drop your file(s) here (quoted paths are supported), then press Enter:")
         raw = input("> ").strip()
         files = shlex.split(raw)

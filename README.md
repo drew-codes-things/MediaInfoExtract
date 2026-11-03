@@ -81,6 +81,24 @@ Drag and drop one or more files onto the terminal prompt (quoted paths are suppo
 
 Enter one file path at a time. The tool asks after each file whether to process another.
 
+### Folder to CSV
+
+Choose mode 3, or skip the menu entirely:
+
+```bash
+python main.py --csv "/media/Shows/Show Name"
+python main.py --csv "/media/Shows" -o shows.csv
+```
+
+Every MediaInfo text report in the folder and its subfolders becomes one row of `mediainfo-summary.csv`. The columns are file, name, quality, video format, bit rate, frame rate, profile, HDR, Dolby Vision, bit depth, aspect ratio, audio track count, audio summary and subtitle languages. Other `.txt` files (including `Formatted - ...` outputs) are ignored.
+
+### Tests
+
+```bash
+pip install pytest
+python -m pytest tests
+```
+
 ---
 
 ## Media Source Tags

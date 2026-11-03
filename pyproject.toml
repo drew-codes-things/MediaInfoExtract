@@ -16,3 +16,6 @@ mediainfo-extract = "main:main"
 
 [tool.setuptools]
 py-modules = ["main"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
