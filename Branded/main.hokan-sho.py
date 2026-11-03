@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 import shlex
 from pathlib import Path
 

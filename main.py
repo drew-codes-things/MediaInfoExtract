@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 import shlex
 from pathlib import Path
 
@@ -316,7 +315,7 @@ def process_file(path, is_remux, src):
             print(f"[OK] {out_path}")
         except OSError as e:
             print(f"[!] Could not write output file '{out_path}': {e}")
-            print(f"    Tip: check that the folder is not read-only or network-mounted.")
+            print("    Tip: check that the folder is not read-only or network-mounted.")
     except Exception as e:
         print(f"[!] Error processing {p.name}: {e}")
 
