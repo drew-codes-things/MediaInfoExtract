@@ -32,7 +32,7 @@ Two run modes are available: batch mode for processing multiple files in one go,
 ### Audio tracks (one entry per track)
 
 - Language
-- Codec: `AC-3`, `E-AC-3`, `E-AC-3 JOC` (Atmos), `DTS`, `DTS XLL`, `MLP FBA`, `MLP FBA 16-ch` (TrueHD Atmos), `FLAC`, `AAC`, `OPUS`, `VORBIS`, `MP3`
+- Codec: `AC-3`, `E-AC-3`, `E-AC-3 JOC` (Atmos), `DTS`, `DTS XLL`, `DTS XLL X` (DTS:X), `MLP FBA`, `MLP FBA 16-ch` (TrueHD Atmos), `FLAC`, `AAC`, `OPUS`, `VORBIS`, `MP3`
 - Channels: `2`, `5.1`, or `7.1`
 - Sampling rate
 - Bit rate (uses Maximum bit rate for 5.1/7.1 tracks)
@@ -59,8 +59,8 @@ Video: Show.Name.S01E01 / 8500 kbps / 1080p / 23.976 fps / High@L4.1 / HDR10 / 1
 Audio: English / E-AC-3 JOC / 5.1 / 48.0 kHz / 768 kbps / NF
 Audio: English / AC-3 / 2 / 48.0 kHz / 192 kbps / NF
 
-Subtitles: English / ASS / NF
-Subtitles: French / PGS / NF
+Subtitle: English / ASS / NF
+Subtitle: French / PGS / NF
 ```
 
 `[Remux]` is appended to the filename if you choose Yes when prompted.

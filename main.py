@@ -186,10 +186,10 @@ def _audio_fmt(line):
             return "MLP FBA 16-ch"
         return "MLP FBA"
     if "dts" in raw:
+        if re.search(r"\bx\b", raw):
+            return "DTS XLL X"
         if "xll" in raw or "hd master" in raw:
             return "DTS XLL"
-        if "x" in raw:
-            return "DTS XLL X"
         return "DTS"
     if "e-ac-3" in raw or "eac3" in raw:
         if "joc" in raw:
@@ -254,7 +254,11 @@ def _height_to_quality(h):
 
 
 def _norm_aspect_ratio(txt):
-    return txt.strip()
+    txt = txt.strip()
+    m = re.fullmatch(r"\s*(\d+(?:\.\d+)?)\s*:\s*(\d+(?:\.\d+)?)\s*", txt)
+    if m and float(m.group(2)) != 0:
+        return f"{float(m.group(1)) / float(m.group(2)):.3f}"
+    return txt
 
 
 def format_output(info, is_remux, src):
