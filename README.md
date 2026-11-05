@@ -9,6 +9,8 @@
 
 </div>
 
+![MediaInfoExtract formatting a MediaInfo report](screenshot.png)
+
 ---
 
 Reads a `.MediaInfo.txt` file exported from MediaInfo (Advanced mode) and extracts the key technical properties from the Video, Audio, and Text (subtitle) tracks. The formatted output is written as `Formatted - <original filename>.txt` next to the input file and is ready for use in encoding notes or release tagging.
