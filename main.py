@@ -136,9 +136,9 @@ def extract_info(file_path: str) -> dict:
         info["Subtitles"].append(subtitle_info)
 
     if info["Quality"] == "N/A":
-        _, h = _resolution(lines)
+        w, h = _resolution(lines)
         if h:
-            info["Quality"] = _height_to_quality(h)
+            info["Quality"] = _resolution_to_quality(w or 0, h)
     return info
 
 
@@ -247,10 +247,20 @@ def _resolution(lines):
     return w, h
 
 
-def _height_to_quality(h):
-    return ("2160p" if h >= 2160 else "1440p" if h >= 1440 else
-            "1080p" if h >= 1080 else "720p" if h >= 720 else
-            "480p" if h >= 480 else f"{h}p")
+QUALITY_TIERS = [
+    ("2160p", 3800, 2160),
+    ("1440p", 2500, 1440),
+    ("1080p", 1900, 1080),
+    ("720p", 1260, 720),
+]
+SD_HEIGHT = 480
+
+
+def _resolution_to_quality(w, h):
+    for quality, min_width, min_height in QUALITY_TIERS:
+        if w >= min_width or h >= min_height:
+            return quality
+    return "480p" if h >= SD_HEIGHT else f"{h}p"
 
 
 def _norm_aspect_ratio(txt):

@@ -96,3 +96,18 @@ def test_cli_csv_mode(library, monkeypatch):
         main.main()
     assert raised.value.code == 0
     assert (library / main.DEFAULT_CSV_NAME).exists()
+
+
+@pytest.mark.parametrize("width, height, quality", [
+    ("1 920", "800", "1080p"),
+    ("1 920", "1 040", "1080p"),
+    ("3 840", "1 600", "2160p"),
+    ("1 280", "536", "720p"),
+    ("1 440", "1 080", "1080p"),
+    ("720", "480", "480p"),
+])
+def test_quality_of_cropped_widescreen_video_comes_from_its_width(tmp_path, width, height, quality):
+    report = REPORT.replace("1 920 pixels", f"{width} pixels").replace("1 080 pixels", f"{height} pixels")
+    path = tmp_path / "Film.mkv.MediaInfo.txt"
+    path.write_text(report)
+    assert main.extract_info(str(path))["Quality"] == quality
