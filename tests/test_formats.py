@@ -125,3 +125,17 @@ def test_only_real_language_lines_count_as_the_language(tmp_path):
 
 def test_frame_rate_mode_is_not_read_as_the_frame_rate(tmp_path):
     assert "Frame rate" not in extract(tmp_path, COMMENTARY_REPORT)
+
+
+def test_empty_format_values_do_not_stop_the_report(tmp_path):
+    report = SEVEN_ONE_REPORT.replace("Format                                   : E-AC-3", "Format                                   :")
+    report = report.replace("Format                                   : HEVC", "Format                                   :")
+    info = extract(tmp_path, report)
+    assert info["Audio"][0]["Channels"] == "7.1"
+
+
+def test_single_quoted_pasted_path_is_found(tmp_path, capsys):
+    path = tmp_path / "Film.mkv.MediaInfo.txt"
+    path.write_text(SEVEN_ONE_REPORT)
+    main.process_file(f"'{path}'", False, "BD")
+    assert "[OK]" in capsys.readouterr().out

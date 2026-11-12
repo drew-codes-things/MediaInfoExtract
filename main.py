@@ -222,6 +222,8 @@ def _audio_fmt(line):
     if "mpeg audio" in raw:
         return MPEG_AUDIO
 
+    if not parts:
+        return ""
     fmt = parts[1] if len(parts) > 1 else parts[0]
     return fmt.replace("JOC", "E-AC-3 JOC")
 
