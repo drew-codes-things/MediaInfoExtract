@@ -81,7 +81,7 @@ def extract_info(file_path: str) -> dict:
         if section == "Video":
             if key == "Bit rate":
                 info["Bit rate"] = _norm_bitrate(line)
-            elif line.startswith("Frame rate"):
+            elif key == "Frame rate":
                 fps = line.split(":", 1)[1].split("(")[0].strip()
                 info["Frame rate"] = f"{fps} fps"
             elif line.startswith("Format profile"):
