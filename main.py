@@ -97,7 +97,7 @@ def extract_info(file_path: str) -> dict:
                 info["Display aspect ratio"] = _norm_aspect_ratio(raw)
 
         elif section == "Audio":
-            if "Language" in line and "Language_More" not in line:
+            if key == "Language":
                 language_cnt += 1
                 if language_cnt == 2:
                     audio_info["Language"] = line.split(":", 1)[1].strip()
@@ -120,7 +120,7 @@ def extract_info(file_path: str) -> dict:
                 audio_info["Bit depth"] = f"{m.group()}-bit" if m else line.split(":", 1)[1].strip()
 
         elif section == "Text":
-            if "Language" in line and "Language_More" not in line:
+            if key == "Language":
                 language_cnt += 1
                 if language_cnt == 2:
                     subtitle_info["Language"] = line.split(":", 1)[1].strip()

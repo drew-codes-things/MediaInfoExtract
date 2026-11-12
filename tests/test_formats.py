@@ -91,3 +91,37 @@ Language                                 : English
 def test_seven_one_track_without_a_maximum_uses_its_bit_rate(tmp_path):
     output = main.format_output(extract(tmp_path, SEVEN_ONE_REPORT), False, "BD")
     assert "Audio: English / E-AC-3 / 7.1 / 48.0 kHz / 1536 kbps / BD" in output
+
+
+COMMENTARY_REPORT = """General
+Complete name                            : Film.mkv
+
+Video
+Format                                   : AVC
+Frame rate mode                          : Variable
+Width                                    : 1 920 pixels
+Height                                   : 1 080 pixels
+
+Audio
+Format                                   : AC-3
+Title                                    : English Language Commentary
+Channel(s)                               : 2 channels
+Language                                 : fr
+Language                                 : French
+
+Text
+Format                                   : PGS
+Title                                    : Language Notes
+Language                                 : en
+Language                                 : English
+"""
+
+
+def test_only_real_language_lines_count_as_the_language(tmp_path):
+    info = extract(tmp_path, COMMENTARY_REPORT)
+    assert info["Audio"][0]["Language"] == "French"
+    assert info["Subtitles"][0]["Language"] == "English"
+
+
+def test_frame_rate_mode_is_not_read_as_the_frame_rate(tmp_path):
+    assert "Frame rate" not in extract(tmp_path, COMMENTARY_REPORT)
