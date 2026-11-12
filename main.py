@@ -267,13 +267,18 @@ QUALITY_TIERS = [
     ("1080p", 1900, 1080),
     ("720p", 1260, 720),
 ]
+PAL_HEIGHT = 576
 SD_HEIGHT = 480
 
 
 def _resolution_to_quality(w, h):
+    if h > w:
+        w, h = h, w
     for quality, min_width, min_height in QUALITY_TIERS:
         if w >= min_width or h >= min_height:
             return quality
+    if h >= PAL_HEIGHT:
+        return "576p"
     return "480p" if h >= SD_HEIGHT else f"{h}p"
 
 

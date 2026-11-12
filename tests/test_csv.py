@@ -105,9 +105,14 @@ def test_cli_csv_mode(library, monkeypatch):
     ("1 280", "536", "720p"),
     ("1 440", "1 080", "1080p"),
     ("720", "480", "480p"),
+    ("720", "576", "576p"),
 ])
 def test_quality_of_cropped_widescreen_video_comes_from_its_width(tmp_path, width, height, quality):
     report = REPORT.replace("1 920 pixels", f"{width} pixels").replace("1 080 pixels", f"{height} pixels")
     path = tmp_path / "Film.mkv.MediaInfo.txt"
     path.write_text(report)
     assert main.extract_info(str(path))["Quality"] == quality
+
+
+def test_portrait_video_is_labelled_by_its_short_side():
+    assert main._resolution_to_quality(1080, 1920) == "1080p"
