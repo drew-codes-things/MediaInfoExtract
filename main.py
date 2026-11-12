@@ -304,7 +304,8 @@ def format_output(info, is_remux, src):
         for k in ("Language", "Format", "Channels", "Sampling rate"):
             if k in a:
                 ln += f" {a[k]} /"
-        rate_key = "Maximum bit rate" if a.get("Channels") in {"7.1"} else "Bit rate"
+        uses_maximum = a.get("Channels") == "7.1" and "Maximum bit rate" in a
+        rate_key = "Maximum bit rate" if uses_maximum else "Bit rate"
         if rate_key in a:
             ln += f" {a[rate_key].replace(' ', '').replace('kbps', ' kbps')} /"
         if "Bit depth" in a:

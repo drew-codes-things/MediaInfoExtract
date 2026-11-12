@@ -68,3 +68,26 @@ def test_posix_drag_and_drop_quoting_still_works():
     assert main.split_dropped_paths("'/media/Show/It'\\''s Always.MediaInfo.txt'", windows=False) == [
         "/media/Show/It's Always.MediaInfo.txt"
     ]
+
+
+SEVEN_ONE_REPORT = """General
+Complete name                            : Film.mkv
+
+Video
+Format                                   : HEVC
+Width                                    : 3 840 pixels
+Height                                   : 2 160 pixels
+
+Audio
+Format                                   : E-AC-3
+Channel(s)                               : 8 channels
+Sampling rate                            : 48.0 kHz
+Bit rate                                 : 1 536 kb/s
+Language                                 : en
+Language                                 : English
+"""
+
+
+def test_seven_one_track_without_a_maximum_uses_its_bit_rate(tmp_path):
+    output = main.format_output(extract(tmp_path, SEVEN_ONE_REPORT), False, "BD")
+    assert "Audio: English / E-AC-3 / 7.1 / 48.0 kHz / 1536 kbps / BD" in output
