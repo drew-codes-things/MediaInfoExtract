@@ -23,7 +23,7 @@ Two run modes are available: batch mode for processing multiple files in one go,
 
 ### Video track
 
-- Bit rate (normalised to kbps or Mbps)
+- Bit rate (normalised to kbps)
 - Frame rate (e.g. `23.976 fps`)
 - Format profile (e.g. `High@L4.1`)
 - HDR format: `HDR10`, `HDR10+`, and/or `Dolby Vision` (all three can appear together)
