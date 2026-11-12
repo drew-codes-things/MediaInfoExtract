@@ -89,8 +89,7 @@ def extract_info(file_path: str) -> dict:
             elif line.startswith("HDR format"):
                 _handle_hdr(info, line)
             elif key == "Format":
-                vals = line.split(":", 1)[1].split()
-                info["Format"] = vals[1] if len(vals) > 1 else vals[0]
+                info["Format"] = line.split(":", 1)[1].strip()
             elif line.startswith("Bit depth"):
                 info["Bit depth"] = line.split(":", 1)[1].strip().replace("bits", "Bit")
             elif "Display aspect ratio" in line and "active" not in line.lower():
@@ -106,6 +105,8 @@ def extract_info(file_path: str) -> dict:
                 format_cnt += 1
                 if _use_this_format(format_cnt, audio_info):
                     audio_info["Format"] = _audio_fmt(line)
+            elif key == "Format profile":
+                audio_info["Format"] = _mpeg_layer_name(audio_info.get("Format"), line)
             elif "Channel(s)" in line:
                 audio_info["Channels"] = _norm_channels(line)
             elif "Sampling rate" in line:
@@ -177,6 +178,17 @@ def _use_this_format(cnt, ainfo):
     return cnt == 1
 
 
+MPEG_AUDIO = "MPEG Audio"
+MPEG_LAYER_NAMES = {"layer 3": "MP3", "layer 2": "MP2"}
+
+
+def _mpeg_layer_name(current_format, profile_line):
+    if current_format != MPEG_AUDIO:
+        return current_format
+    profile = profile_line.split(":", 1)[1].strip().lower()
+    return MPEG_LAYER_NAMES.get(profile, current_format)
+
+
 def _audio_fmt(line):
     raw = line.split(":", 1)[1].lower()
     parts = line.split(":", 1)[1].split()
@@ -207,6 +219,8 @@ def _audio_fmt(line):
         return "VORBIS"
     if "mp3" in raw:
         return "MP3"
+    if "mpeg audio" in raw:
+        return MPEG_AUDIO
 
     fmt = parts[1] if len(parts) > 1 else parts[0]
     return fmt.replace("JOC", "E-AC-3 JOC")

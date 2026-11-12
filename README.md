@@ -29,12 +29,12 @@ Two run modes are available: batch mode for processing multiple files in one go,
 - HDR format: `HDR10`, `HDR10+`, and/or `Dolby Vision` (all three can appear together)
 - Bit depth (e.g. `10 Bit`)
 - Display aspect ratio (normalised to decimal, e.g. `1.778`)
-- Video codec (e.g. `HEVC`, `AVC`)
+- Video codec (e.g. `HEVC`, `AVC`, `MPEG Video`)
 
 ### Audio tracks (one entry per track)
 
 - Language
-- Codec: `AC-3`, `E-AC-3`, `E-AC-3 JOC` (Atmos), `DTS`, `DTS XLL`, `DTS XLL X` (DTS:X), `MLP FBA`, `MLP FBA 16-ch` (TrueHD Atmos), `FLAC`, `AAC`, `OPUS`, `VORBIS`, `MP3`
+- Codec: `AC-3`, `E-AC-3`, `E-AC-3 JOC` (Atmos), `DTS`, `DTS XLL`, `DTS XLL X` (DTS:X), `MLP FBA`, `MLP FBA 16-ch` (TrueHD Atmos), `FLAC`, `AAC`, `OPUS`, `VORBIS`, `MP3`, `MP2`
 - Channels: `2`, `5.1`, or `7.1`
 - Sampling rate
 - Bit rate (uses Maximum bit rate for 5.1/7.1 tracks)
