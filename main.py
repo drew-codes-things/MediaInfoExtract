@@ -440,6 +440,17 @@ def choose_source(sources):
     return sources[0]
 
 
+def split_dropped_paths(raw, windows=os.name == "nt"):
+    try:
+        parts = shlex.split(raw, posix=not windows)
+    except ValueError as e:
+        print(f"[!] Could not read the paths ({e}). Put quotes around each path and try again.")
+        return []
+    if windows:
+        parts = [part.strip('"') for part in parts]
+    return parts
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Format MediaInfo text reports for release notes.")
     parser.add_argument("--csv", metavar="FOLDER", default=None,
@@ -479,7 +490,7 @@ def main():
     elif mode == "1":
         print("\nDrag and drop your file(s) here (quoted paths are supported), then press Enter:")
         raw = input("> ").strip()
-        files = shlex.split(raw)
+        files = split_dropped_paths(raw)
         if not files:
             print("No files given."); return
 
