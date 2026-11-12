@@ -339,8 +339,12 @@ def format_output(info, is_remux, src):
     return f"File name: {fname}\n\n{vline}\n\n" + "\n".join(audio) + "\n\n" + "\n".join(subs)
 
 
+def strip_pasted_quotes(path):
+    return path.strip().strip('"').strip("'")
+
+
 def process_file(path, is_remux, src):
-    p = Path(path.strip('"'))
+    p = Path(strip_pasted_quotes(path))
     if not p.is_file():
         print(f"[!] Not found: {p}")
         return
@@ -492,7 +496,7 @@ def main():
     mode = input("Choose 1, 2 or 3 [1]: ").strip() or "1"
 
     if mode == "3":
-        folder = input("\nFolder path: ").strip().strip('"')
+        folder = strip_pasted_quotes(input("\nFolder path: "))
         run_csv_mode(folder)
 
     elif mode == "1":
